@@ -27,23 +27,33 @@ public class CloverOverlay extends Dialog {
 
   private final String TAG = CloverOverlay.class.getSimpleName();
 
+  // static vars
+  private static final ViewGroup.LayoutParams FILL_FILL =
+          new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                           ViewGroup.LayoutParams.FILL_PARENT);
+
+  private static final String BASE_URL = "https://www.cloverdev.net/";
+  private static final String WEB_VIEW_URL = BASE_URL + "static/sdk-overlay.html#protocol=AndroidJavascriptBridge";
+
+  private static final Map<String,String> sdkVersionInfo = sdkVersion();
+
+  // instance vars
   private Handler handler = new Handler();
   private final String url;
   private ProgressDialog spinner;
   private FrameLayout contentLayout;
   private WebView webView;
   private ImageView cancelImage;
-  private static final ViewGroup.LayoutParams FILL_FILL =
-          new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                           ViewGroup.LayoutParams.FILL_PARENT);
-  private static final String BASE_URL = "https://www.cloverdev.net/";
-  private static final String WEB_VIEW_URL = BASE_URL + "static/sdk-overlay.html#protocol=AndroidJavascriptBridge";
-  private final CloverOrder cloverOrder;
-  private final PurchaseListener listener;
 
-  public CloverOverlay(Context context, CloverOrder cloverOrder, PurchaseListener listener) {
+  private final CloverOrder cloverOrder;
+  private final UserInfo userInfo;
+  private final OrderListener listener;
+
+
+  public CloverOverlay(Context context, CloverOrder cloverOrder, UserInfo userInfo, OrderListener listener) {
     super(context, R.style.Theme_Translucent_NoTitleBar);
     this.cloverOrder = cloverOrder;
+    this.userInfo = userInfo == null ? new UserInfo() : userInfo;
     this.listener = listener;
     this.url = WEB_VIEW_URL;
   }
@@ -118,7 +128,7 @@ public class CloverOverlay extends Dialog {
     webView.setLayoutParams(FILL_FILL);
     webView.setVisibility(View.INVISIBLE);
     webView.loadUrl(url);
-    webViewLayout.setPadding(margin+2, margin+2, margin+2, margin+2);
+    webViewLayout.setPadding(margin + 2, margin + 2, margin + 2, margin + 2);
     webViewLayout.addView(webView);
     contentLayout.addView(webViewLayout);
   }
@@ -147,24 +157,13 @@ public class CloverOverlay extends Dialog {
     final JSONObject payload = new JSONObject();
 
     try {
-      Map sdkInfo = new HashMap(2);
-      sdkInfo.put("platform", "android");
-      sdkInfo.put("version", "0.0.1");
-
-      Map userInfo = new HashMap(2);
-      userInfo.put("fullName", "Nagesh"); // where to i get this from?
-      userInfo.put("phoneNumber", "650-265-8071");
-      userInfo.put("emailAddress", "nagesh@clover.com");
-
-      dataJson.put("sdkInfo", new JSONObject(sdkInfo));
-      dataJson.put("userInfo", new JSONObject(userInfo));
-
-      //dataJson.put("deviceInfo")
+      dataJson.put("sdkInfo", new JSONObject(sdkVersionInfo));
+      if (userInfo != null) userInfo.toJson(dataJson);
       payload.put("type", "Checkout");
       payload.put("data", dataJson);
       Log.d(TAG, "sending " + payload.toString(2));
     } catch (JSONException e) {
-      Log.e(TAG, "Exception creting json ", e);
+      Log.e(TAG, "Exception creating json ", e);
     }
 
     handler.post(new Runnable() {
@@ -189,5 +188,13 @@ public class CloverOverlay extends Dialog {
         }
       }
     });
+  }
+
+
+  private static Map<String,String> sdkVersion() {
+    Map<String,String> sdkInfo = new HashMap<String,String>(2);
+    sdkInfo.put("platform", "android");
+    sdkInfo.put("version", "0.0.1");
+    return sdkInfo;
   }
 }

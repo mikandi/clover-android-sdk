@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+// Rename this somehow
 public class CloverOrder {
 
   private static final String TAG = CloverOrder.class.getSimpleName();
@@ -62,7 +63,7 @@ public class CloverOrder {
     return dataObject;
   }
 
-  public void buy(Activity activity, PurchaseListener listener) {
+  public void buy(Activity activity, OrderListener listener) {
     instance.sendCloverIntent(this, activity, listener);
   }
 

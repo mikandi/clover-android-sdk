@@ -19,10 +19,18 @@ import java.net.URLEncoder;
 public class Clover {
   private static final String TAG = "Clover";
 
+  /** The request code sent with a startActivityForResult(..) */
   private static final int CLOVER_BUY_REQ_CODE = 0xc1eaf;
+  /** The Clover package name */
   private static final String CLOVER_PACKAGE = "com.clover.pay.android";
+  /** Activity for the purchase flow */
   private static final String ACTIVITY = "com.clover.pay.android.PurchaseActivity";
+
   private static final String ACTION_LINK_BASE = "clover://HandleActionLink?checkout&version=1&data=";
+
+  /** Base version that supports checkout **/
+  private static final int BASE_CHECKOUT_VERSION = 28;
+
 
   /** Merchant ID associated with the Clover Account **/
   private final String merchantId;
@@ -31,7 +39,9 @@ public class Clover {
   private final Context context;
 
   /** Completion listener */
-  private PurchaseListener listener;
+  private OrderListener listener;
+
+  private final UserInfo userInfo;
 
   private Clover(Context context, String merchantId) {
     if (merchantId == null) {
@@ -39,6 +49,7 @@ public class Clover {
     }
     this.merchantId = merchantId;
     this.context = context;
+    this.userInfo = new UserInfo();
   }
 
   /**
@@ -47,9 +58,25 @@ public class Clover {
    * @param merchantId - Clover Merchant ID
    * @return an instance of the CloverSDK
    */
-  public static Clover initializeSDK(Context context, String merchantId) {
+  public static Clover init(Context context, String merchantId) {
     return new Clover(context, merchantId);
   }
+
+  /**
+   * Optional Information about the User that is used only in case Clover is not installed on the device.
+   * This information is used to pre-fill the web overlay used for first time purchase.
+   * It is highly recommended to provide as much information as possible to increase conversion by reducing
+   * the burden on users to type in this data in the first purchase web view.
+   * example Usage:
+   * <code>
+   * Clover.createFirstPurchaseInfo().setFullName("Full_Name").setPhoneNumber("555-111-2222").setEmail("foo@example.com");
+   * </code>
+   * @return UserInfo
+   */
+  public UserInfo createFirstPurchaseInfo() {
+    return userInfo;
+  }
+
 
   public CloverOrder.Builder createCloverOrderBuilder() {
     return new CloverOrder.Builder(this, merchantId);
@@ -97,7 +124,7 @@ public class Clover {
     try {
       PackageInfo info = context.getPackageManager().getPackageInfo(CLOVER_PACKAGE, 0);
       // maybe validate the app here
-      useApp = info != null; // check signatures here
+      useApp = info != null && info.versionCode >= BASE_CHECKOUT_VERSION ; // check signatures here
     } catch (PackageManager.NameNotFoundException ex) {
       useApp = false;
     }
@@ -105,11 +132,11 @@ public class Clover {
   }
 
 
-  public void showDialog(Activity activity, CloverOrder cloverOrder, PurchaseListener listener) {
-    new CloverOverlay(activity, cloverOrder, listener).show();
+  public void showDialog(Activity activity, CloverOrder cloverOrder, OrderListener listener) {
+    new CloverOverlay(activity, cloverOrder, userInfo, listener).show();
   }
 
-  public void sendCloverIntent(CloverOrder cloverOrder, Activity activity, PurchaseListener listener) {
+  public void sendCloverIntent(CloverOrder cloverOrder, Activity activity, OrderListener listener) {
     this.listener = listener;
     Intent intent = null;
     if (hasCloverApp()) {
