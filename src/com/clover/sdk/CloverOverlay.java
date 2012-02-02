@@ -118,12 +118,8 @@ public class CloverOverlay extends Dialog {
     webView.setLayoutParams(FILL_FILL);
     webView.setVisibility(View.INVISIBLE);
     webView.loadUrl(url);
-
-    Log.d(TAG, "adding a padding of " + margin );
     webViewLayout.setPadding(margin+2, margin+2, margin+2, margin+2);
     webViewLayout.addView(webView);
-    webViewLayout.setBackgroundDrawable(getContext().getResources().getDrawable(com.clover.sdk.R.drawable.border_color));
-    //webViewLayout.setBackgroundResource(com.clover.sdk.R.drawable.border_color);
     contentLayout.addView(webViewLayout);
   }
 
