@@ -101,8 +101,7 @@ public class Clover {
     } catch (PackageManager.NameNotFoundException ex) {
       useApp = false;
     }
-    //return useApp;
-    return false;
+    return useApp;
   }
 
 
