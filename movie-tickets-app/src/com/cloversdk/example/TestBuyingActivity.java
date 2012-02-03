@@ -34,7 +34,7 @@ public class TestBuyingActivity extends Activity {
     final OrderRequest order = cloverSDK.createOrderRequestBuilder()
         .setAmount("0.50").setTitle("Movie Ticket")
         .setPermissions(new String[] {"full_name", "email_address"})
-        .setClientOrderId("my_client_id")
+        .setClientOrderId("my_client_id") // Specify an ID that identifies this item in your application. (such as an item id)
         .build();
 
 
