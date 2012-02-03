@@ -29,7 +29,7 @@ public class Clover {
   private static final String ACTION_LINK_BASE = "clover://HandleActionLink?checkout&version=1&data=";
 
   /** Base version that supports checkout **/
-  private static final int BASE_CHECKOUT_VERSION = 28;
+  private static final int BASE_CHECKOUT_VERSION = 27;
 
   /** Merchant ID associated with the Clover Account **/
   private final String merchantId;
