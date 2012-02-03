@@ -105,7 +105,8 @@ public class Clover {
     if (activity == null) throw new IllegalArgumentException("Activity is required");
     if (orderRequest == null) throw new IllegalArgumentException("An orderRequest is required");
     if (orderListener == null) throw new IllegalArgumentException("An orderListener is required");
-    sendCloverIntent(orderRequest, activity, listener);
+
+    sendCloverIntent(orderRequest, activity, orderListener);
   }
 
   /**

@@ -47,7 +47,7 @@ public class CloverOverlay extends Dialog {
 
   private final OrderRequest cloverOrder;
   private final UserInfo userInfo;
-  private final OrderListener listener;
+  final OrderListener listener;
 
 
   public CloverOverlay(Context context, OrderRequest cloverOrder, UserInfo userInfo, OrderListener listener) {
@@ -67,13 +67,12 @@ public class CloverOverlay extends Dialog {
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     contentLayout = new FrameLayout(getContext());
 
-
     cancelImage = new ImageView(getContext());
     cancelImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         CloverOverlay.this.dismiss();
-        //listener.onCancel();
+        listener.onCancel();
       }
     });
 
@@ -106,9 +105,9 @@ public class CloverOverlay extends Dialog {
                                   String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
         Log.d(TAG, "onReceived error " + description + " failing url " + failingUrl);
-        // Dispath the error to the caller
-        listener.onFailure(new RuntimeException("Failed to load " + failingUrl));
         dismiss();
+//        // Dispatch the error to the caller
+//        listener.onFailure(new RuntimeException("Failed to load " + failingUrl));
       }
 
       @Override
@@ -185,7 +184,7 @@ public class CloverOverlay extends Dialog {
     }
   }
 
-  private void sendResult(final String dataJson) {
+  public void sendResult(final String dataJson) {
     dismiss();
     handler.post(new Runnable() {
       @Override
