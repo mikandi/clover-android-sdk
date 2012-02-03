@@ -45,14 +45,14 @@ public class CloverOverlay extends Dialog {
   private WebView webView;
   private ImageView cancelImage;
 
-  private final OrderRequest cloverOrder;
+  private final OrderRequest orderRequest;
   private final UserInfo userInfo;
   final OrderListener listener;
 
 
-  public CloverOverlay(Context context, OrderRequest cloverOrder, UserInfo userInfo, OrderListener listener) {
+  public CloverOverlay(Context context, OrderRequest orderRequest, UserInfo userInfo, OrderListener listener) {
     super(context, R.style.Theme_Translucent_NoTitleBar);
-    this.cloverOrder = cloverOrder;
+    this.orderRequest = orderRequest;
     this.userInfo = userInfo == null ? new UserInfo() : userInfo;
     this.listener = listener;
     this.url = WEB_VIEW_URL;
@@ -156,7 +156,7 @@ public class CloverOverlay extends Dialog {
   }
 
   private void sendOrder() {
-      JSONObject dataJson = cloverOrder.toJson();
+      JSONObject dataJson = orderRequest.toJson();
       final JSONObject payload = new JSONObject();
 
       try {
@@ -190,11 +190,11 @@ public class CloverOverlay extends Dialog {
       @Override
       public void run() {
         try {
-          String orderId = Clover.toOrderId(dataJson);
-          CloverOrder order = new CloverOrder();
-          order.id = orderId;
+          CloverOrder order = Utils.parseCloverOrder(dataJson);
           listener.onOrderAuthorized(order);
         } catch (JSONException e) {
+          listener.onFailure(e);
+        } catch (Exception e) {
           listener.onFailure(e);
         }
       }

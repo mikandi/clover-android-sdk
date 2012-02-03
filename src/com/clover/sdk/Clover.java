@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -125,13 +124,13 @@ public class Clover {
         String value = data.getStringExtra("data");
         try {
           String json = URLDecoder.decode(value, "UTF-8");
-          String orderId = toOrderId(json);
-          CloverOrder order = new CloverOrder();
-          order.id = orderId;
+          CloverOrder order = Utils.parseCloverOrder(json);
           listener.onOrderAuthorized(order);
         } catch (UnsupportedEncodingException e) {
           listener.onFailure(e);
         } catch (JSONException e) {
+          listener.onFailure(e);
+        } catch (Exception e) {
           listener.onFailure(e);
         }
       } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -140,7 +139,7 @@ public class Clover {
       }
       return true;
     }
-    return true;
+    return false;
   }
 
   /**
@@ -189,11 +188,5 @@ public class Clover {
     } else {
       showDialog(activity, cloverOrder, listener);
     }
-  }
-
-  /*package*/ static String toOrderId(String json) throws JSONException {
-    JSONObject p = new JSONObject(json);
-    JSONObject object = (JSONObject) p.get("order");
-    return (String) object.get("id");
   }
 }
