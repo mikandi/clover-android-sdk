@@ -94,14 +94,14 @@ public class Clover {
   }
 
   /**
-   * Process an OrderRequest object and receive any Callbacks on the OrderListener instance passed in.
+   * Authorize an OrderRequest object and receive any Callbacks on the OrderListener instance passed in.
    * @param activity instance processing the request.
    *                 This activity is used as the base for startActivityForResult if the Clover App is present on the device.
    *                 In its absence, a Webview overlay/Dialog is created with the activity as the context
    * @param orderRequest to be processed by Clover
    * @param orderListener to get all the callbacks
    */
-  public void requestOrder(Activity activity, OrderRequest orderRequest, OrderListener orderListener) {
+  public void authorizeOrder(Activity activity, OrderRequest orderRequest, OrderListener orderListener) {
     if (activity == null) throw new IllegalArgumentException("Activity is required");
     if (orderRequest == null) throw new IllegalArgumentException("An orderRequest is required");
     if (orderListener == null) throw new IllegalArgumentException("An orderListener is required");
