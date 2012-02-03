@@ -46,14 +46,14 @@ public class CloverOverlay extends Dialog {
   private ImageView cancelImage;
 
   private final OrderRequest orderRequest;
-  private final UserInfo userInfo;
+  private final CloverUserInfo userInfo;
   final OrderListener listener;
 
 
-  public CloverOverlay(Context context, OrderRequest orderRequest, UserInfo userInfo, OrderListener listener) {
+  public CloverOverlay(Context context, OrderRequest orderRequest, CloverUserInfo userInfo, OrderListener listener) {
     super(context, R.style.Theme_Translucent_NoTitleBar);
     this.orderRequest = orderRequest;
-    this.userInfo = userInfo == null ? new UserInfo() : userInfo;
+    this.userInfo = userInfo == null ? new CloverUserInfo() : userInfo;
     this.listener = listener;
     this.url = WEB_VIEW_URL;
   }

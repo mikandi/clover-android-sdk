@@ -7,18 +7,18 @@ import org.json.JSONObject;
  * UserInfo that can be optionally set by the Application
  * This information is only used during first purchase to pre-fill the information on the webView overlay
  */
-public class UserInfo {
+public class CloverUserInfo {
   private String name;
   private String phoneNumber;
   private String email;
 
-  UserInfo() {}
+  CloverUserInfo() {}
 
   /**
    * @param name of the user
    * @return UserInfo instance
    */
-  public UserInfo setFullName(String name) {
+  public CloverUserInfo setFullName(String name) {
     this.name = name;
     return this;
   }
@@ -27,7 +27,7 @@ public class UserInfo {
    * @param phoneNumber of the user
    * @return UserInfo
    */
-  public UserInfo setPhoneNumber(String phoneNumber) {
+  public CloverUserInfo setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
     return this;
   }
@@ -36,7 +36,7 @@ public class UserInfo {
    * @param email address of the user
    * @return UserInfo
    */
-  public UserInfo setEmail(String email) {
+  public CloverUserInfo setEmail(String email) {
     this.email = email;
     return this;
   }

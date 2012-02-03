@@ -40,7 +40,7 @@ public class Clover {
   private OrderListener listener;
 
   /** Optional userInfo */
-  private final UserInfo userInfo;
+  private final CloverUserInfo userInfo;
 
   private Clover(Context context, String merchantId) {
     if (merchantId == null) {
@@ -48,7 +48,7 @@ public class Clover {
     }
     this.merchantId = merchantId;
     this.context = context;
-    this.userInfo = new UserInfo();
+    this.userInfo = new CloverUserInfo();
   }
 
   /**
@@ -72,7 +72,7 @@ public class Clover {
    * </code>
    * @return UserInfo
    */
-  public UserInfo createFirstPurchaseInfo() {
+  public CloverUserInfo createFirstPurchaseInfo() {
     return userInfo;
   }
 
