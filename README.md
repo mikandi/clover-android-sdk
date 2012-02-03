@@ -5,7 +5,7 @@ This Android Java Library allows you to integrate Clover Checkout into your Andr
 
 Getting Started
 ===============
-* Create a merchant account by following the docs at https://www.clover.com/docs/getting-started#1:-Create-a-Merchant-Account
+* Create a merchant account by following the [Clover Docs](https://www.clover.com/docs/getting-started#1:-Create-a-Merchant-Account)
 * Download this library by either cloning/forking it 
 
   <code>
