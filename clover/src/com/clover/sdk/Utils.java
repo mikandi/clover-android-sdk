@@ -36,10 +36,11 @@ public class Utils {
    */
   static String toPermissions(String[] permissionTypes) {
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < permissionTypes.length; i++) {
-      sb.append(permissionTypes[i]);
-      if (i < permissionTypes.length -1) sb.append(",");
-    }
+    if (permissionTypes != null)
+      for (int i = 0; i < permissionTypes.length; i++) {
+        sb.append(permissionTypes[i]);
+        if (i < permissionTypes.length - 1) sb.append(",");
+      }
     return sb.toString();
   }
 
