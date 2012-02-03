@@ -20,7 +20,7 @@ public class Clover {
   private static final String TAG = "Clover";
 
   /** The request code sent with a startActivityForResult(..) */
-  private static final int CLOVER_BUY_REQ_CODE = 0xc1eaf;
+  private static final int CLOVER_BUY_REQ_CODE = 0xc1eaf; // 794287
   /** The Clover package name */
   private static final String CLOVER_PACKAGE = "com.clover.pay.android";
   /** Activity for the purchase flow */
@@ -31,7 +31,6 @@ public class Clover {
   /** Base version that supports checkout **/
   private static final int BASE_CHECKOUT_VERSION = 28;
 
-
   /** Merchant ID associated with the Clover Account **/
   private final String merchantId;
   
@@ -41,6 +40,7 @@ public class Clover {
   /** Completion listener */
   private OrderListener listener;
 
+  /** Optional userInfo */
   private final UserInfo userInfo;
 
   private Clover(Context context, String merchantId) {
@@ -78,42 +78,68 @@ public class Clover {
   }
 
 
-  public CloverOrder.Builder createCloverOrderBuilder() {
-    return new CloverOrder.Builder(this, merchantId);
+  /**
+   * Create an OrderRequest object which can then be filled in with the necessary properties
+   * such as Title, Amount, etc.
+   *
+   * example:
+   * <code>
+   *   OrderRequest request = cloverInstance.createOrderRequestBuilder().setTitle(..).setAmount("1.00").addPermission("full_name")...
+   *      .addPermission("email_address").build();
+   * </code>
+   * @return OrderRequest.Builder instance
+   */
+  public OrderRequest.Builder createOrderRequestBuilder() {
+    return new OrderRequest.Builder(this, merchantId);
   }
 
-  //    TODO REMIND - Consider returning the entire Order object
-  // by making a call to the server and fetching the order object if needed
-  // OR using the one passed in the intent.
+  /**
+   * Process an OrderRequest object and receive any Callbacks on the OrderListener instance passed in.
+   * @param activity instance processing the request.
+   *                 This activity is used as the base for startActivityForResult if the Clover App is present on the device.
+   *                 In its absence, a Webview overlay/Dialog is created with the activity as the context
+   * @param orderRequest to be processed by Clover
+   * @param orderListener to get all the callbacks
+   */
+  public void requestOrder(Activity activity, OrderRequest orderRequest, OrderListener orderListener) {
+    if (activity == null) throw new IllegalArgumentException("Activity is required");
+    if (orderRequest == null) throw new IllegalArgumentException("An orderRequest is required");
+    if (orderListener == null) throw new IllegalArgumentException("An orderListener is required");
+    sendCloverIntent(orderRequest, activity, listener);
+  }
 
   /**
-   * This needs to be hooked into the the caller Activity onActivityResult
+   * This needs to be hooked into the the callers activity:
+   *
+   * Activity#onActivityResult(int requestCode, int resultCode, Intent data)
+   *
    * @param requestCode
    * @param resultCode
    * @param data
-   * @return order id
+   * @return boolean indicating whether this event was handled
    */
-  public void onResult(int requestCode, int resultCode, Intent data) {
-
-    if (requestCode == CLOVER_BUY_REQ_CODE && resultCode != 0) {
-
-      String value = data.getStringExtra("data");
-      try {
-        String json = URLDecoder.decode(value, "UTF-8");
-        String orderId = toOrderId(json);
-        listener.onCompletion(orderId);
-      } catch (UnsupportedEncodingException e) {
-        listener.onFailure("Exception decoding object");
-      } catch (JSONException e) {
-        listener.onFailure("Exception parsing JSON");
+  public boolean onResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == CLOVER_BUY_REQ_CODE) {
+      if (resultCode == Activity.RESULT_OK) {
+        String value = data.getStringExtra("data");
+        try {
+          String json = URLDecoder.decode(value, "UTF-8");
+          String orderId = toOrderId(json);
+          CloverOrder order = new CloverOrder();
+          order.id = orderId;
+          listener.onOrderAuthorized(order);
+        } catch (UnsupportedEncodingException e) {
+          listener.onFailure(e);
+        } catch (JSONException e) {
+          listener.onFailure(e);
+        }
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        // An explicit back button or Cancel was called
+        listener.onCancel();
       }
+      return true;
     }
-  }
-
-  /*package*/ static String toOrderId(String json) throws JSONException {
-    JSONObject p = new JSONObject(json);
-    JSONObject object = (JSONObject) p.get("order");
-    return (String) object.get("id");
+    return true;
   }
 
   /**
@@ -132,11 +158,18 @@ public class Clover {
   }
 
 
-  public void showDialog(Activity activity, CloverOrder cloverOrder, OrderListener listener) {
-    new CloverOverlay(activity, cloverOrder, userInfo, listener).show();
+  /**
+   * In the absence of a Clover App that supports the CHECKOUT_VERSION, we show the dialog
+   * as an overlay using the activity
+   * @param activity to use as the parent of the dialog
+   * @param orderRequest request
+   * @param listener listener for callbacks
+   */
+  private void showDialog(Activity activity, OrderRequest orderRequest, OrderListener listener) {
+    new CloverOverlay(activity, orderRequest, userInfo, listener).show();
   }
 
-  public void sendCloverIntent(CloverOrder cloverOrder, Activity activity, OrderListener listener) {
+  private void sendCloverIntent(OrderRequest cloverOrder, Activity activity, OrderListener listener) {
     this.listener = listener;
     Intent intent = null;
     if (hasCloverApp()) {
@@ -155,5 +188,11 @@ public class Clover {
     } else {
       showDialog(activity, cloverOrder, listener);
     }
+  }
+
+  /*package*/ static String toOrderId(String json) throws JSONException {
+    JSONObject p = new JSONObject(json);
+    JSONObject object = (JSONObject) p.get("order");
+    return (String) object.get("id");
   }
 }

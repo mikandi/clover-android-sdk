@@ -45,12 +45,12 @@ public class CloverOverlay extends Dialog {
   private WebView webView;
   private ImageView cancelImage;
 
-  private final CloverOrder cloverOrder;
+  private final OrderRequest cloverOrder;
   private final UserInfo userInfo;
   private final OrderListener listener;
 
 
-  public CloverOverlay(Context context, CloverOrder cloverOrder, UserInfo userInfo, OrderListener listener) {
+  public CloverOverlay(Context context, OrderRequest cloverOrder, UserInfo userInfo, OrderListener listener) {
     super(context, R.style.Theme_Translucent_NoTitleBar);
     this.cloverOrder = cloverOrder;
     this.userInfo = userInfo == null ? new UserInfo() : userInfo;
@@ -62,7 +62,7 @@ public class CloverOverlay extends Dialog {
     super.onCreate(savedInstanceState);
     spinner = new ProgressDialog(getContext());
     spinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-    spinner.setMessage("Loading ...");
+    spinner.setMessage("Loading...");
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     contentLayout = new FrameLayout(getContext());
@@ -73,8 +73,10 @@ public class CloverOverlay extends Dialog {
       @Override
       public void onClick(View view) {
         CloverOverlay.this.dismiss();
+        //listener.onCancel();
       }
     });
+
     cancelImage.setImageDrawable(getContext().getResources().getDrawable(com.clover.sdk.R.drawable.cancel));
     cancelImage.setVisibility(View.INVISIBLE);
 
@@ -104,6 +106,8 @@ public class CloverOverlay extends Dialog {
                                   String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
         Log.d(TAG, "onReceived error " + description + " failing url " + failingUrl);
+        // Dispath the error to the caller
+        listener.onFailure(new RuntimeException("Failed to load " + failingUrl));
         dismiss();
       }
 
@@ -136,7 +140,7 @@ public class CloverOverlay extends Dialog {
   public class CloverJSInterface {
     Context context;
 
-    CloverJSInterface(Context c) {
+    public CloverJSInterface(Context c) {
       context = c;
     }
 
@@ -153,26 +157,32 @@ public class CloverOverlay extends Dialog {
   }
 
   private void sendOrder() {
-    JSONObject dataJson = cloverOrder.toJson();
-    final JSONObject payload = new JSONObject();
+      JSONObject dataJson = cloverOrder.toJson();
+      final JSONObject payload = new JSONObject();
 
-    try {
-      dataJson.put("sdkInfo", new JSONObject(sdkVersionInfo));
-      if (userInfo != null) userInfo.toJson(dataJson);
-      payload.put("type", "Checkout");
-      payload.put("data", dataJson);
-      Log.d(TAG, "sending " + payload.toString(2));
-    } catch (JSONException e) {
-      Log.e(TAG, "Exception creating json ", e);
-    }
-
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        Log.d(TAG, "loading url with onMessage now");
-        webView.loadUrl("javascript:gBridge._onMessage(" + payload.toString() +");void(0);");
+      try {
+        dataJson.put("sdkInfo", new JSONObject(sdkVersionInfo));
+        if (userInfo != null) userInfo.toJson(dataJson);
+        payload.put("type", "Checkout");
+        payload.put("data", dataJson);
+        Log.d(TAG, "sending " + payload.toString(2));
+      } catch (JSONException e) {
+        Log.e(TAG, "Exception creating json ", e);
+        dismiss();
+        listener.onFailure(e);
+        return;
       }
-    });
+    try {
+      handler.post(new Runnable() {
+        @Override
+        public void run() {
+          webView.loadUrl("javascript:gBridge._onMessage(" + payload.toString() + ");void(0);");
+        }
+      });
+    } catch (Exception ex) {
+      dismiss();
+      listener.onFailure(ex);
+    }
   }
 
   private void sendResult(final String dataJson) {
@@ -182,14 +192,15 @@ public class CloverOverlay extends Dialog {
       public void run() {
         try {
           String orderId = Clover.toOrderId(dataJson);
-          listener.onCompletion(orderId);
+          CloverOrder order = new CloverOrder();
+          order.id = orderId;
+          listener.onOrderAuthorized(order);
         } catch (JSONException e) {
-          listener.onFailure("Failure parsing JSON");
+          listener.onFailure(e);
         }
       }
     });
   }
-
 
   private static Map<String,String> sdkVersion() {
     Map<String,String> sdkInfo = new HashMap<String,String>(2);
