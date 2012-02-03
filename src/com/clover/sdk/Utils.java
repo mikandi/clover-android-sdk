@@ -23,13 +23,13 @@ public class Utils {
 
   /**
    * Util method
-   * @param permissionTypes
+   * @param permissionTypes String[]
    * @return comma separated permission string
    */
-  static String toPermissions(PermissionType[] permissionTypes) {
+  static String toPermissions(String[] permissionTypes) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < permissionTypes.length; i++) {
-      sb.append(permissionTypes[i].name().toLowerCase());
+      sb.append(permissionTypes[i]);
       if (i < permissionTypes.length -1) sb.append(",");
     }
     return sb.toString();

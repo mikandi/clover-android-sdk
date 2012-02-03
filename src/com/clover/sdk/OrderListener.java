@@ -21,7 +21,7 @@ public interface OrderListener {
   /**
    * Callback to indicate a failure indicating either an order request problem such
    * as invalid permissions or a transport failure.
-   * @param th
+   * @param th indicating the type of the failure
    */
   public void onFailure(Throwable th);
 }

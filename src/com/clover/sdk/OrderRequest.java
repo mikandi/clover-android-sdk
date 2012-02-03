@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-// Rename this somehow
 public class OrderRequest {
 
   private static final String TAG = OrderRequest.class.getSimpleName();
@@ -68,7 +67,7 @@ public class OrderRequest {
   public static class Builder {
     private String title;
     private String amount;
-    private List<PermissionType> permissionTypes;
+    private List<String> permissionTypes;
     private final Clover instance;
     private String account;
     private String type = "buy";
@@ -78,7 +77,7 @@ public class OrderRequest {
     Builder(Clover instance, String account) {
       this.instance = instance;
       this.account = account;
-      this.permissionTypes = new LinkedList<PermissionType>();
+      this.permissionTypes = new LinkedList<String>();
     }
 
     /**
@@ -103,21 +102,19 @@ public class OrderRequest {
     }
 
     /**
-     * @param type of the permission to add
+     * @param permission to add
      * @return Builder instance
-     * @see PermissionType
      */
-    public Builder addPermission(PermissionType type) {
-      this.permissionTypes.add(type);
+    public Builder addPermission(String permission) {
+      this.permissionTypes.add(permission);
       return this;
     }
 
     /**
      * @param permissions to be used
      * @return Builder instance
-     * @see PermissionType
      */
-    public Builder setPermissions(PermissionType[] permissions) {
+    public Builder setPermissions(String[] permissions) {
       if (permissions == null) throw new IllegalArgumentException("Permissions cannot be null");
       this.permissionTypes.addAll(Arrays.asList(permissions));
       return this;
@@ -146,7 +143,7 @@ public class OrderRequest {
      */
     public OrderRequest build() {
       return new OrderRequest(instance, account, title, amount,
-          Utils.toPermissions(permissionTypes.toArray(new PermissionType[permissionTypes.size()])), type,
+          Utils.toPermissions(permissionTypes.toArray(new String[permissionTypes.size()])), type,
           clientOrderId, imageUrl);
     }
   }

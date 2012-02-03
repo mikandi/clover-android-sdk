@@ -117,7 +117,7 @@ public class Clover {
    * @param requestCode
    * @param resultCode
    * @param data
-   * @return boolean indicating whether this event was handled
+   * @return boolean indicating whether this event was handled by Clover SDK
    */
   public boolean onResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == CLOVER_BUY_REQ_CODE) {
