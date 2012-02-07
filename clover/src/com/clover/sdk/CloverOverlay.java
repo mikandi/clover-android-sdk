@@ -32,7 +32,7 @@ public class CloverOverlay extends Dialog {
           new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
                            ViewGroup.LayoutParams.FILL_PARENT);
 
-  private static final String BASE_URL = "https://www.cloverdev.net/";
+  private static final String BASE_URL = "https://www.clover.com/";
   private static final String WEB_VIEW_URL = BASE_URL + "static/sdk-overlay.html#protocol=AndroidJavascriptBridge";
 
   private static final Map<String,String> sdkVersionInfo = sdkVersion();

@@ -24,7 +24,7 @@ public class TestBuyingActivity extends Activity {
     setContentView(R.layout.main);
 
     // Initialize the Clover SDK by passing in the merchant ID
-    cloverSDK = Clover.init(this, "58129cb7-1a1f-4cf3-8699-13f33bbaa6ae");
+    cloverSDK = Clover.init(this, "2d55ee78-e284-4910-bfe5-6f964fe0d5d7");
 
     // Populate the First Purchase Info if available. This is used for pre-populating the
     // web overlay only and saves the user from typing this information
