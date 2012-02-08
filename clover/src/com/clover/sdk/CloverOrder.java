@@ -17,7 +17,7 @@ public class CloverOrder {
 
   public static class EmailAddress {
     public String email;
-    public Boolean is_verified;
+    public boolean is_verified;
   }
 
   public static class ShippingAddress {
@@ -29,7 +29,7 @@ public class CloverOrder {
     public String state;
     public String zip;
     public String country;
-    public Boolean is_verified;
+    public boolean is_verified;
   }
 
   public static enum Status {ordered, accepted, refunded, rejected, cancelled, authorized}
