@@ -3,7 +3,7 @@ package com.clover.sdk;
 /**
  * Callbacks associated with an order
  */
-public interface OrderListener {
+public interface CloverOrderListener {
 
   /**
    * @param order authorized by Clover either via the Overlay or the App

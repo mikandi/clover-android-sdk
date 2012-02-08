@@ -12,7 +12,7 @@ public class CloverUserInfo {
   private String phoneNumber;
   private String email;
 
-  CloverUserInfo() {}
+  public CloverUserInfo() {}
 
   /**
    * @param name of the user

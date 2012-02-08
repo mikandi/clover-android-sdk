@@ -11,8 +11,8 @@ import android.widget.Button;
 import android.widget.Toast;
 import com.clover.sdk.Clover;
 import com.clover.sdk.CloverOrder;
-import com.clover.sdk.OrderListener;
-import com.clover.sdk.OrderRequest;
+import com.clover.sdk.CloverOrderListener;
+import com.clover.sdk.CloverOrderRequest;
 
 public class TestBuyingActivity extends Activity {
 
@@ -31,7 +31,7 @@ public class TestBuyingActivity extends Activity {
     cloverSDK.createFirstPurchaseInfo().setFullName("Nagesh").setEmail("nagesh@example.com");
 
     // Next create the OrderRequest via a builder.
-    final OrderRequest order = cloverSDK.createOrderRequestBuilder()
+    final CloverOrderRequest order = cloverSDK.createOrderRequestBuilder()
         .setAmount("0.50").setTitle("Movie Ticket")
         .setPermissions(new String[] {"full_name", "email_address"})
         .setClientOrderId("my_client_id") // Specify an ID that identifies this item in your application. (such as an item id)
@@ -44,7 +44,7 @@ public class TestBuyingActivity extends Activity {
       public void onClick(View v) {
         // authorizeOrder call on the Clover instance makes a call to the Clover App
         // or a web overlay and returns one of the callbacks of an OrderListener
-        cloverSDK.authorizeOrder(TestBuyingActivity.this, order, new OrderListener() {
+        cloverSDK.authorizeOrder(TestBuyingActivity.this, order, new CloverOrderListener() {
           @Override
           public void onOrderAuthorized(CloverOrder order) {
             if (order != null) {

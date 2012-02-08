@@ -1,4 +1,4 @@
-package com.clover.sdk;
+package com.clover.sdk.impl;
 
 import android.R;
 import android.app.Dialog;
@@ -17,6 +17,10 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import com.clover.sdk.CloverOrder;
+import com.clover.sdk.CloverOrderRequest;
+import com.clover.sdk.CloverUserInfo;
+import com.clover.sdk.CloverOrderListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,12 +49,12 @@ public class CloverOverlay extends Dialog {
   private WebView webView;
   private ImageView cancelImage;
 
-  private final OrderRequest orderRequest;
+  private final CloverOrderRequest orderRequest;
   private final CloverUserInfo userInfo;
-  final OrderListener listener;
+  final CloverOrderListener listener;
 
 
-  public CloverOverlay(Context context, OrderRequest orderRequest, CloverUserInfo userInfo, OrderListener listener) {
+  public CloverOverlay(Context context, CloverOrderRequest orderRequest, CloverUserInfo userInfo, CloverOrderListener listener) {
     super(context, R.style.Theme_Translucent_NoTitleBar);
     this.orderRequest = orderRequest;
     this.userInfo = userInfo == null ? new CloverUserInfo() : userInfo;

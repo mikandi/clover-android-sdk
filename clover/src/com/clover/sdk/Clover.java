@@ -9,6 +9,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
+import com.clover.sdk.impl.CloverOverlay;
+import com.clover.sdk.impl.Utils;
 import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
@@ -37,7 +39,7 @@ public class Clover {
   private final Context context;
 
   /** Completion listener */
-  private OrderListener listener;
+  private CloverOrderListener listener;
 
   /** Optional userInfo */
   private final CloverUserInfo userInfo;
@@ -88,8 +90,8 @@ public class Clover {
    * </code>
    * @return OrderRequest.Builder instance
    */
-  public OrderRequest.Builder createOrderRequestBuilder() {
-    return new OrderRequest.Builder(this, merchantId);
+  public CloverOrderRequest.Builder createOrderRequestBuilder() {
+    return new CloverOrderRequest.Builder(this, merchantId);
   }
 
   /**
@@ -100,7 +102,7 @@ public class Clover {
    * @param orderRequest to be processed by Clover
    * @param orderListener to get all the callbacks
    */
-  public void authorizeOrder(Activity activity, OrderRequest orderRequest, OrderListener orderListener) {
+  public void authorizeOrder(Activity activity, CloverOrderRequest orderRequest, CloverOrderListener orderListener) {
     if (activity == null) throw new IllegalArgumentException("Activity is required");
     if (orderRequest == null) throw new IllegalArgumentException("An orderRequest is required");
     if (orderListener == null) throw new IllegalArgumentException("An orderListener is required");
@@ -165,11 +167,11 @@ public class Clover {
    * @param orderRequest request
    * @param listener listener for callbacks
    */
-  private void showDialog(Activity activity, OrderRequest orderRequest, OrderListener listener) {
+  private void showDialog(Activity activity, CloverOrderRequest orderRequest, CloverOrderListener listener) {
     new CloverOverlay(activity, orderRequest, userInfo, listener).show();
   }
 
-  private void sendCloverIntent(OrderRequest cloverOrder, Activity activity, OrderListener listener) {
+  private void sendCloverIntent(CloverOrderRequest cloverOrder, Activity activity, CloverOrderListener listener) {
     this.listener = listener;
     Intent intent = null;
     if (hasCloverApp()) {

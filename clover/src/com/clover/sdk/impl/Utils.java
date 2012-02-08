@@ -1,6 +1,6 @@
-package com.clover.sdk;
+package com.clover.sdk.impl;
 
-import android.util.Log;
+import com.clover.sdk.CloverOrder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +19,7 @@ public class Utils {
   // Class known for its static methods
   private Utils() {}
 
-  static boolean isValidAmount(String amount) {
+  public static boolean isValidAmount(String amount) {
     if (amount == null) return false;
     try {
       Number n = TWO_DEC.parse(amount);
@@ -34,7 +34,7 @@ public class Utils {
    * @param permissionTypes String[]
    * @return comma separated permission string
    */
-  static String toPermissions(String[] permissionTypes) {
+  public static String toPermissions(String[] permissionTypes) {
     StringBuilder sb = new StringBuilder();
     if (permissionTypes != null)
       for (int i = 0; i < permissionTypes.length; i++) {
@@ -44,7 +44,7 @@ public class Utils {
     return sb.toString();
   }
 
-  static CloverOrder parseCloverOrder(String json) throws Exception {
+  public static CloverOrder parseCloverOrder(String json) throws Exception {
     final JSONObject object = new JSONObject(json);
     return parseJson(CloverOrder.class, object.getJSONObject("order"));
   }
@@ -56,7 +56,6 @@ public class Utils {
     // Will work only on public fields
     for (Field field : fields) {
       if (Modifier.isPublic(field.getModifiers())) {
-        Log.d("utils", "processing " + field.getName());
         try {
           setValue(field, object, instance);
         } catch (JSONException e) {

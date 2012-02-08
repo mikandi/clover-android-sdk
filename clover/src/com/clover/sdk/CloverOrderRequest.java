@@ -1,6 +1,7 @@
 package com.clover.sdk;
 
 import android.util.Log;
+import com.clover.sdk.impl.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,9 +9,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OrderRequest {
+public class CloverOrderRequest {
 
-  private static final String TAG = OrderRequest.class.getSimpleName();
+  private static final String TAG = CloverOrderRequest.class.getSimpleName();
 
   private final Clover instance;
   private final String account;
@@ -21,7 +22,7 @@ public class OrderRequest {
   private final String clientOrderId;
   private final String imageUrl;
 
-  private OrderRequest(Clover instance, String account, String title, String amount, String permissions, String type, String clientOrderId, String imageUrl) {
+  private CloverOrderRequest(Clover instance, String account, String title, String amount, String permissions, String type, String clientOrderId, String imageUrl) {
     if (title == null) throw new IllegalArgumentException("Missing required field title");
 
     this.instance = instance;
@@ -141,8 +142,8 @@ public class OrderRequest {
     /**
      * @return CloverOrder instance
      */
-    public OrderRequest build() {
-      return new OrderRequest(instance, account, title, amount,
+    public CloverOrderRequest build() {
+      return new CloverOrderRequest(instance, account, title, amount,
           Utils.toPermissions(permissionTypes.toArray(new String[permissionTypes.size()])), type,
           clientOrderId, imageUrl);
     }
