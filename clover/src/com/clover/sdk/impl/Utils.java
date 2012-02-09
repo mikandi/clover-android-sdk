@@ -1,5 +1,6 @@
 package com.clover.sdk.impl;
 
+import com.clover.sdk.CloverException;
 import com.clover.sdk.CloverOrder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public class Utils {
 
-  private static NumberFormat TWO_DEC = new DecimalFormat("0.00");
+  private static final NumberFormat TWO_DEC = new DecimalFormat("0.00");
 
   // Class known for its static methods
   private Utils() {}
@@ -46,7 +47,15 @@ public class Utils {
 
   public static CloverOrder parseCloverOrder(String json) throws Exception {
     final JSONObject object = new JSONObject(json);
-    return parseJson(CloverOrder.class, object.getJSONObject("order"));
+    Object ord = object.get("order");
+    if (object.has("order") && ord != null && ord != JSONObject.NULL) {
+      JSONObject order = object.getJSONObject("order");
+      return parseJson(CloverOrder.class, order);
+    } else if (object.has("error") && object.get("error") != JSONObject.NULL) {
+      JSONObject error = object.getJSONObject("error");
+      throw parseJson(CloverException.class, error);
+    }
+    else throw new CloverException("Unknown", "Unknown exception");
   }
   
   private static <T> T parseJson(Class<T> clazz, JSONObject object) throws IllegalAccessException, InstantiationException {

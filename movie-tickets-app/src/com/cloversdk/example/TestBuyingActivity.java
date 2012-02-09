@@ -25,7 +25,6 @@ public class TestBuyingActivity extends Activity {
 
     // Initialize the Clover SDK by passing in the merchant ID
     cloverSDK = Clover.init(this, "2d55ee78-e284-4910-bfe5-6f964fe0d5d7");
-
     // Populate the First Purchase Info if available. This is used for pre-populating the
     // web overlay only and saves the user from typing this information
     cloverSDK.createFirstPurchaseInfo().setFullName("Nagesh").setEmail("nagesh@example.com");
@@ -73,7 +72,17 @@ public class TestBuyingActivity extends Activity {
 
           @Override
           public void onFailure(Throwable th) {
-            Toast.makeText(TestBuyingActivity.this, th.getMessage(), Toast.LENGTH_LONG).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(TestBuyingActivity.this);
+            builder.setTitle("Error");
+            builder.setMessage(th.getMessage());
+            builder.setCancelable(false);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialogInterface, int i) {
+
+              }
+            });
+            builder.show();
           }
         });
       }
