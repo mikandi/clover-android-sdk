@@ -23,8 +23,6 @@ public class CloverOrderRequest {
   private final String imageUrl;
 
   private CloverOrderRequest(Clover instance, String account, String title, String amount, String permissions, String type, String clientOrderId, String imageUrl) {
-    if (title == null) throw new IllegalArgumentException("Missing required field title");
-
     this.instance = instance;
     this.account = account;
     this.title = title;
