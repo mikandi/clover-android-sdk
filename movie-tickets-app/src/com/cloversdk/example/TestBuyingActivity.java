@@ -31,7 +31,8 @@ public class TestBuyingActivity extends Activity {
 
     // Next create the OrderRequest via a builder.
     final CloverOrderRequest order = cloverSDK.createOrderRequestBuilder()
-        .setAmount("0.50").setTitle("Movie Ticket")
+        .setAmount("0.50")
+        .setTitle("Movie Ticket")
         .setPermissions(new String[] {"full_name", "email_address"})
         .setClientOrderId("my_client_id") // Specify an ID that identifies this item in your application. (such as an item id)
         .build();
@@ -52,7 +53,7 @@ public class TestBuyingActivity extends Activity {
               AlertDialog.Builder builder = new AlertDialog.Builder(TestBuyingActivity.this);
               builder.setTitle("Purchased!");
 
-              String message = String.format("OrderId: %s\nName: %s \nEmail: %s\n", order.id, order.permissions.full_name, order.permissions.email_address.email);
+              String message = String.format("OrderId: %s\nName: %s \nEmail: %s\n", order.id, order.permissions.fullName, order.permissions.emailAddress.email);
 
               builder.setMessage(message);
               builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

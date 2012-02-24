@@ -50,7 +50,9 @@ public class Utils {
     Object ord = object.get("order");
     if (object.has("order") && ord != null && ord != JSONObject.NULL) {
       JSONObject order = object.getJSONObject("order");
-      return parseJson(CloverOrder.class, order);
+      final CloverOrderInternal delegate = parseJson(CloverOrderInternal.class, order);
+      if (delegate == null) throw new CloverException("Unknown", "Missing order information");
+      return new CloverOrder(delegate);
     } else if (object.has("error") && object.get("error") != JSONObject.NULL) {
       JSONObject error = object.getJSONObject("error");
       throw parseJson(CloverException.class, error);
