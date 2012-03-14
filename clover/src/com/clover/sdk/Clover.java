@@ -31,6 +31,7 @@ public class Clover {
 
   /** Base version that supports checkout **/
   private static final int BASE_CHECKOUT_VERSION = 27;
+  private static final String CHECKOUT = "checkout";
 
   /** Merchant ID associated with the Clover Account **/
   private final String merchantId;
@@ -179,6 +180,7 @@ public class Clover {
       intent.setComponent(new ComponentName(CLOVER_PACKAGE, ACTIVITY));
       try {
         intent.setData(Uri.parse(ACTION_LINK_BASE + URLEncoder.encode(cloverOrder.toJsonString(), "UTF-8")));
+        intent.putExtra(CHECKOUT, cloverOrder.asBundle());
       } catch (UnsupportedEncodingException e) {
         Log.e(TAG, "Encoding error ", e);
       } catch (ActivityNotFoundException e) {

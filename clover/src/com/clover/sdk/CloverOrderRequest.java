@@ -1,5 +1,6 @@
 package com.clover.sdk;
 
+import android.os.Bundle;
 import android.util.Log;
 import com.clover.sdk.impl.Utils;
 import org.json.JSONException;
@@ -36,6 +37,22 @@ public class CloverOrderRequest {
   public String toJsonString() {
     JSONObject json = toJson();
     return json.toString();
+  }
+
+  public Bundle asBundle() {
+    Bundle bundle = new Bundle();
+    bundle.putString("account", account);
+    bundle.putString("amount", amount);
+    bundle.putString("permissions", permissions);
+    bundle.putString("title", title);
+    bundle.putString("type", type);
+    if (clientOrderId != null) {
+      bundle.putString("client_order_id", clientOrderId);
+    }
+    if (imageUrl != null) {
+      bundle.putString("image", imageUrl);
+    }
+    return bundle;
   }
   
   public JSONObject toJson() {
