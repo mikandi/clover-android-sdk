@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -31,7 +32,13 @@ public class Clover {
 
   /** Base version that supports checkout **/
   private static final int BASE_CHECKOUT_VERSION = 27;
+
+  /** base ping version  */ 
+  private static final int BASE_PING_BROADCAST_VERSION = 35;
+
   private static final String CHECKOUT = "checkout";
+  private static final String PING_RECEIVER = "com.clover.pay.android.PingBroadcastReceiver";
+  private static final String PING_ACTION = "com.clover.pay.android.intent.PING";
 
   /** Merchant ID associated with the Clover Account **/
   private final String merchantId;
@@ -52,6 +59,7 @@ public class Clover {
     this.merchantId = merchantId;
     this.context = context;
     this.userInfo = new CloverUserInfo();
+    sendPingIntent();
   }
 
   /**
@@ -138,7 +146,7 @@ public class Clover {
         }
       } else if (resultCode == Activity.RESULT_CANCELED) {
         // An explicit back button or Cancel was called
-        listener.onCancel();
+        if (listener != null) listener.onCancel();
       }
       return true;
     }
@@ -151,13 +159,17 @@ public class Clover {
   public boolean hasCloverApp() {
     boolean useApp;
     try {
-      PackageInfo info = context.getPackageManager().getPackageInfo(CLOVER_PACKAGE, 0);
+      PackageInfo info = getCloverPkgInfo();
       // maybe validate the app here
       useApp = info != null && info.versionCode >= BASE_CHECKOUT_VERSION ; // check signatures here
     } catch (PackageManager.NameNotFoundException ex) {
       useApp = false;
     }
     return useApp;
+  }
+
+  private PackageInfo getCloverPkgInfo() throws PackageManager.NameNotFoundException {
+    return context.getPackageManager().getPackageInfo(CLOVER_PACKAGE, PackageManager.GET_RECEIVERS);
   }
 
 
@@ -193,4 +205,34 @@ public class Clover {
       showDialog(activity, cloverOrder, listener);
     }
   }
+
+  /**
+   * Send a ping to our app to ensure it is inited
+   */
+  private void sendPingIntent() {
+    try {
+      PackageInfo info = getCloverPkgInfo();
+      if (info != null && info.versionCode >= BASE_PING_BROADCAST_VERSION) {
+        ActivityInfo[] receivers = info.receivers;
+        if (receivers != null) {
+          boolean hasPing = false;
+          for (int i = 0; i < receivers.length; i++) {
+            if (PING_RECEIVER.equals(receivers[i].name)) {
+              hasPing = true;
+              break;
+            }
+          }
+          if (hasPing) {
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName(CLOVER_PACKAGE, PING_RECEIVER));
+            intent.setAction(PING_ACTION);
+            context.sendBroadcast(intent);
+          }
+        }
+      }
+    } catch (Exception ignore) {
+      // ignore this exception
+    }
+  }
+
 }
