@@ -155,6 +155,8 @@ public class CloverOverlay extends Dialog {
         sendOrder();
       } else if ("OrderAuthorized".equals(type)) {
         sendResult(dataJson);
+      } else if ("HideCloseButton".equals(type)) {
+        cancelImage.setVisibilty(View.GONE);
       }
     }
   }
